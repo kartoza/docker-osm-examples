@@ -1,0 +1,18 @@
+areas:
+  area_tags: [buildings]
+tables:
+  buildings:
+    columns:
+    - name: osm_id
+      type: id
+    - name: geometry
+      type: geometry
+    - key: name
+      name: name
+      type: string
+    - name: type
+      type: mapping_value
+    mapping:
+      building:
+      - __any__
+    type: polygon
