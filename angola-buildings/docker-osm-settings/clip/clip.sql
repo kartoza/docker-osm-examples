@@ -12,7 +12,7 @@ BEGIN
             SELECT DISTINCT osm_id
             FROM ' || quote_ident(osm_table.table_name) || '
             LEFT JOIN clip ON ST_Intersects(geometry, geom)
-            WHERE clip.gid IS NULL)
+            WHERE clip.ogc_fid IS NULL)
         ;';
     END LOOP;
 END;
