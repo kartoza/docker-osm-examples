@@ -5,7 +5,7 @@ FROM byrnedo/alpine-curl
 MAINTAINER Tim Sutton <tim@kartoza.com>
 
 RUN mkdir /settings
-RUN wget https://download.geofabrik.de/europ/portugal-latest.osm.pbf -O settings/country.pbf
+RUN wget https://download.geofabrik.de/europe/portugal-latest.osm.pbf -O settings/country.pbf
 ADD mapping.yml /settings/mapping.yml
 ADD clip /settings/clip
 ADD qgis_style.sql /settings/qgis_style.sql
