@@ -1,4 +1,4 @@
-PROJECT_ID := indonesia-buildings-osm-mirror
+PROJECT_ID := trieste-electricity-osm-mirror
 COMPOSE := -f docker-compose.yml
 
 SHELL := /bin/bash
