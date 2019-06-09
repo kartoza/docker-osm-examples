@@ -8,105 +8,35 @@ areas:
 tables:
   power_areas:
     columns:
-    - name: osm_id
-      type: id
-    - name: geometry
-      type: geometry
-    - key: name
-      name: name
-      type: string
-    - key: use
-      name: use
-      type: string
-    - name: power
-      type: mapping_value
-    - name: substation
-      type: mapping_value
-    - name: location
-      type: mapping_value
-    - name: voltage
-      type: mapping_value
-    - name: cables
-      type: mapping_value
-    - name: converter
-      type: mapping_value
-    - name: poles
-      type: mapping_value
-    - name: rating
-      type: mapping_value
-    - name: operator
-      type: mapping_value
-    mapping:
-      power:
-      - __any__
-      substation:
-      - __any__
-      location:
-      - __any__
-      voltage:
-      - __any__
-      location:
-      - __any__
-      cables:
-      - __any__
-      converter:
-      - __any__
-      poles:
-      - __any__
-      rating:
-      - __any__
-      operator:
-      - __any__
+    - {name: osm_id, type: id}
+    - {name: the_geom, type: geometry}
+    - {key: use, name: use, type: string}
+    - {key: name, name: name, type: string}
+    - {key: power, name: power, type: string}
+    - {key: substation, name: substation, type: string}
+    # The different voltages of the substation, ordered from highest to 
+    # lowest (ex: 400000;225000;63000). It is recommended to tag at least 
+    # the highest voltage of the substation.
+    - {key: voltage, name: voltage, type: string}
+    - {key: cables, name: cables, type: integer}
+    - {key: poles, name: cables, type: integer}
+    - {key: rating, name: cables, type: integer}
+    - {key: operator, name: cables, type: integer}
     type: polygon
   power_lines:
     columns:
-    - name: osm_id
-      type: id
-    - name: geometry
-      type: geometry
-    - key: name
-      name: name
-      type: string
-    - key: use
-      name: use
-      type: string
-    - name: power
-      type: mapping_value
-    - name: substation
-      type: mapping_value
-    - name: location
-      type: mapping_value
-    - name: voltage
-      type: mapping_value
-    - name: cables
-      type: mapping_value
-    - name: converter
-      type: mapping_value
-    - name: poles
-      type: mapping_value
-    - name: rating
-      type: mapping_value
-    - name: operator
-      type: mapping_value
-    mapping:
-      power:
-      - __any__
-      substation:
-      - __any__
-      location:
-      - __any__
-      voltage:
-      - __any__
-      location:
-      - __any__
-      cables:
-      - __any__
-      converter:
-      - __any__
-      poles:
-      - __any__
-      rating:
-      - __any__
-      operator:
-      - __any__
+    - {name: osm_id, type: id}
+    - {name: the_geom, type: geometry}
+    - {key: use, name: use, type: string}
+    - {key: name, name: name, type: string}
+    - {key: power, name: power, type: string}
+    - {key: substation, name: substation, type: string}
+    # The different voltages of the substation, ordered from highest to 
+    # lowest (ex: 400000;225000;63000). It is recommended to tag at least 
+    # the highest voltage of the substation.
+    - {key: voltage, name: voltage, type: string}
+    - {key: cables, name: cables, type: integer}
+    - {key: poles, name: cables, type: integer}
+    - {key: rating, name: cables, type: integer}
+    - {key: operator, name: cables, type: integer}
     type: linestring
