@@ -19,9 +19,9 @@ tables:
     # the highest voltage of the substation.
     - {key: voltage, name: voltage, type: string}
     - {key: cables, name: cables, type: integer}
-    - {key: poles, name: cables, type: integer}
-    - {key: rating, name: cables, type: integer}
-    - {key: operator, name: cables, type: integer}
+    - {key: poles, name: poles, type: integer}
+    - {key: rating, name: rating, type: integer}
+    - {key: operator, name: operator, type: integer}
     type: polygon
   power_lines:
     columns:
@@ -36,7 +36,7 @@ tables:
     # the highest voltage of the substation.
     - {key: voltage, name: voltage, type: string}
     - {key: cables, name: cables, type: integer}
-    - {key: poles, name: cables, type: integer}
-    - {key: rating, name: cables, type: integer}
-    - {key: operator, name: cables, type: integer}
+    - {key: poles, name: poles, type: integer}
+    - {key: rating, name: rating, type: integer}
+    - {key: operator, name: operator, type: integer}
     type: linestring
