@@ -1,3 +1,8 @@
+#
+# Please see https://imposm.org/docs/imposm3/latest/mapping.html
+# 
+# For documentation on the YAML format used below
+#
 areas:
   area_tags: [buildings]
 tables:
