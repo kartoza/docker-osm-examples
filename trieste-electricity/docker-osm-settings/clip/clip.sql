@@ -18,3 +18,21 @@ BEGIN
 END;
 $BODY$
 LANGUAGE plpgsql;
+
+-- Function to validate geometry of all tables. To run it after creating the function sinmply run Select validate_geom();
+CREATE OR REPLACE FUNCTION validate_geom() RETURNS void AS
+$BODY$
+DECLARE osm_tables CURSOR FOR
+    SELECT table_name
+    FROM information_schema.tables
+    WHERE table_schema='public'
+    AND table_type='BASE TABLE'
+    AND table_name LIKE 'osm_%';
+BEGIN
+    FOR osm_table IN osm_tables LOOP
+        EXECUTE 'UPDATE ' || quote_ident(osm_table.table_name) || ' SET
+              geometry = ST_MakeValid(geometry) where ST_isValidreason(geometry) = ''F'' ;';
+    END LOOP;
+END;
+$BODY$
+LANGUAGE plpgsql;

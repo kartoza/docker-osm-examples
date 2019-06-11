@@ -40,3 +40,209 @@ tables:
     - {key: rating, name: rating, type: integer}
     - {key: operator, name: operator, type: integer}
     type: linestring
+  transmission_lines:
+    columns:
+    - {name: osm_id, type: id}
+    - {name: the_geom, type: geometry}
+    - {name: type,type: mapping_value}
+    - {key: substation, name: substation, type: string}
+      # The different voltages of the substation, ordered from highest to
+      # lowest (ex: 400000;225000;63000). It is recommended to tag at least
+      # the highest voltage of the substation.
+    - {key: voltage, name: voltage, type: string}
+    - {key: gas_insulated, name: gas_insulated, type: string}
+    - {key: ref, name: ref, type: string}
+    - {key: operator, name: operator, type: string}
+    - {key: location, name: location, type: string}
+    mapping:
+      type: [way]
+      power: [line, cable, minor_line]
+    type: linestring
+  substation_areas:
+    columns:
+      - {name: osm_id, type: id}
+      - {name: the_geom, type: geometry}
+      - {key: name, name: name, type: string}
+      - {key: power, name: power, type: mapping_value}
+      - {key: substation, name: substation, type: string}
+      # The different voltages of the substation, ordered from highest to
+      # lowest (ex: 400000;225000;63000). It is recommended to tag at least
+      # the highest voltage of the substation.
+      - {key: voltage, name: voltage, type: string}
+      - {key: gas_insulated, name: gas_insulated, type: string}
+      - {key: ref, name: ref, type: string}
+      - {key: operator, name: operator, type: string}
+      - {key: location, name: location, type: string}
+    mapping:
+      power: [substation]
+    type: polygon
+  substation_point:
+    columns:
+      - {name: osm_id, type: id}
+      - {name: the_geom, type: geometry}
+      - {key: name, name: name, type: string}
+      - {key: power, name: power, type: mapping_value}
+      - {key: substation, name: substation, type: string}
+      # The different voltages of the substation, ordered from highest to
+      # lowest (ex: 400000;225000;63000). It is recommended to tag at least
+      # the highest voltage of the substation.
+      - {key: voltage, name: voltage, type: string}
+      - {key: gas_insulated, name: gas_insulated, type: string}
+      - {key: ref, name: ref, type: string}
+      - {key: operator, name: operator, type: string}
+      - {key: location, name: location, type: string}
+    mapping:
+      power: [substation]
+    type: point
+  switchgear:
+    columns:
+      - {name: osm_id, type: id}
+      - {name: the_geom, type: geometry}
+      - {key: power, name: power, type: mapping_value}
+      # The different voltages of the substation, ordered from highest to
+      # lowest (ex: 400000;225000;63000). It is recommended to tag at least
+      # the highest voltage of the substation.
+      - {key: voltage, name: voltage, type: string}
+      - {key: gas_insulated, name: gas_insulated, type: string}
+      - {key: location, name: location, type: string}
+    mapping:
+      power: [switchgear]
+    type: linestring
+  busbar:
+    columns:
+      - {name: osm_id, type: id}
+      - {name: the_geom, type: geometry}
+      - {key: power, name: power, type: mapping_value}
+      # The different voltages of the substation, ordered from highest to
+      # lowest (ex: 400000;225000;63000). It is recommended to tag at least
+      # the highest voltage of the substation.
+      - {key: voltage, name: voltage, type: string}
+      - {key: cables, name: cables, type: integer}
+      - {key: line, name: line, type: string}
+    mapping:
+      power: [line]
+    type: linestring
+  bay:
+    columns:
+      - {name: osm_id, type: id}
+      - {name: the_geom, type: geometry}
+      - {key: power, name: power, type: mapping_value}
+      # The different voltages of the substation, ordered from highest to
+      # lowest (ex: 400000;225000;63000). It is recommended to tag at least
+      # the highest voltage of the substation.
+      - {key: voltage, name: voltage, type: string}
+      - {key: cables, name: cables, type: integer}
+      - {key: line, name: line, type: string}
+    mapping:
+      power: [line]
+    type: linestring
+  switch:
+    columns:
+      - {name: osm_id, type: id}
+      - {name: the_geom, type: geometry}
+      - {key: power, name: power, type: mapping_value}
+      # The different voltages of the substation, ordered from highest to
+      # lowest (ex: 400000;225000;63000). It is recommended to tag at least
+      # the highest voltage of the substation.
+      - {key: voltage, name: voltage, type: string}
+      - {key: cables, name: cables, type: integer}
+      - {key: gas_insulated, name: gas_insulated, type: string}
+      - {key: location, name: location, type: string}
+      - {key: switch, name: switch, type: string}
+      - {key: operator, name: operator, type: string}
+      - {key: ref, name: ref, type: string}
+    mapping:
+      power: [switch]
+    type: point
+  converter_point:
+    columns:
+      - {name: osm_id, type: id}
+      - {name: the_geom, type: geometry}
+      - {key: power, name: power, type: mapping_value}
+      # The different voltages of the substation, ordered from highest to
+      # lowest (ex: 400000;225000;63000). It is recommended to tag at least
+      # the highest voltage of the substation.
+      - {key: voltage, name: voltage, type: string}
+      - {key: converter, name: converter, type: string}
+      - {key: poles, name: poles, type: integer}
+      - {key: rating, name: rating, type: string}
+      - {key: location, name: location, type: string}
+      - {key: operator, name: operator, type: string}
+      - {key: phases, name: phases, type: string}
+      - {key: frequency, name: frequency, type: string}
+      - {key: name, name: name, type: string}
+      - {key: ref, name: ref, type: string}
+    mapping:
+      power: [converter]
+    type: point
+  converter_areas:
+    columns:
+      - {name: osm_id, type: id}
+      - {name: the_geom, type: geometry}
+      - {key: power, name: power, type: mapping_value}
+      # The different voltages of the substation, ordered from highest to
+      # lowest (ex: 400000;225000;63000). It is recommended to tag at least
+      # the highest voltage of the substation.
+      - {key: voltage, name: voltage, type: string}
+      - {key: converter, name: converter, type: string}
+      - {key: poles, name: poles, type: integer}
+      - {key: rating, name: rating, type: string}
+      - {key: location, name: location, type: string}
+      - {key: operator, name: operator, type: string}
+      - {key: phases, name: phases, type: string}
+      - {key: frequency, name: frequency, type: string}
+      - {key: name, name: name, type: string}
+      - {key: ref, name: ref, type: string}
+    mapping:
+      power: [converter]
+    type: polygon
+  compensator_point:
+    columns:
+      - {name: osm_id, type: id}
+      - {name: the_geom, type: geometry}
+      - {key: power, name: power, type: mapping_value}
+      # The different voltages of the substation, ordered from highest to
+      # lowest (ex: 400000;225000;63000). It is recommended to tag at least
+      # the highest voltage of the substation.
+      - {key: voltage, name: voltage, type: string}
+      - {key: compensator, name: compensator, type: string}
+      - {key: rating, name: rating, type: string}
+    mapping:
+      power: [compensator]
+    type: point
+  compensator_areas:
+    columns:
+      - {name: osm_id, type: id}
+      - {name: the_geom, type: geometry}
+      - {key: power, name: power, type: mapping_value}
+      # The different voltages of the substation, ordered from highest to
+      # lowest (ex: 400000;225000;63000). It is recommended to tag at least
+      # the highest voltage of the substation.
+      - {key: voltage, name: voltage, type: string}
+      - {key: compensator, name: compensator, type: string}
+      - {key: rating, name: rating, type: string}
+    mapping:
+      power: [compensator]
+    type: polygon
+  transformer:
+    columns:
+      - {name: osm_id, type: id}
+      - {name: the_geom, type: geometry}
+      - {key: power, name: power, type: mapping_value}
+      # The different voltages of the substation, ordered from highest to
+      # lowest (ex: 400000;225000;63000). It is recommended to tag at least
+      # the highest voltage of the substation.
+      - {key: "voltage:primary", name: "voltage:primary", type: string}
+      - {key: "voltage:secondary", name: "voltage:secondary", type: string}
+      - {key: "phases:primary", name: "phases:primary", type: string}
+      - {key: "phases:secondary", name: "phases:secondary", type: string}
+      - {key: "rating:primary", name: "rating:primary", type: string}
+      - {key: "rating:secondary", name: "rating:secondary", type: string}
+      - {key: "windings:primary", name: "windings:primary", type: string}
+      - {key: "windings:secondary", name: "windings:secondary", type: string}
+      - {key: transformer, name: transformer, type: string}
+      - {key: location, name: location, type: string}
+      - {key: frequency, name: frequency, type: string}
+    mapping:
+      power: [transformer]
+    type: point
