@@ -1,8 +1,3 @@
-#
-# Please see https://imposm.org/docs/imposm3/latest/mapping.html
-# 
-# For documentation on the YAML format used below
-#
 areas:
   area_tags: [buildings]
 tables:
@@ -15,9 +10,50 @@ tables:
     - key: name
       name: name
       type: string
+    - key: use
+      name: use
+      type: string
+    - key: religion
+      name: religion
+      type: string
+    - key: leisure
+      name: leisure
+      type: string
     - name: type
+      type: mapping_value
+    - name: amenity
+      type: mapping_value
+    - name: landuse
       type: mapping_value
     mapping:
       building:
       - __any__
+      amenity:
+      - __any__
+      landuse:
+      - __any__
     type: polygon
+  roads:
+    columns:
+      - name: osm_id
+        type: id
+      - name: geometry
+        type: geometry
+      - name: type
+        type: mapping_value
+      - key: name
+        name: name
+        type: string
+      - name: class
+        type: mapping_key
+    filters:
+      reject:
+        area: ["yes"]
+    mappings:
+      roads:
+        mapping:
+          highway:
+            - __any__
+    type: linestring
+
+
