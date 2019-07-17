@@ -19,6 +19,42 @@ tables:
     - key: leisure
       name: leisure
       type: string
+    - key: height
+      name: height
+      type: integer
+    - key: "building:levels"
+      name: "building:levels"
+      type: string
+    - key: "building:height"
+      name: "building:height"
+      type: integer
+    - key: "building:min_level"
+      name: "building:min_level"
+      type: integer
+    - key: "roof:direction"
+      name: "roof:direction"
+      type: string
+    - key: "roof:levels"
+      name: "roof:levels"
+      type: integer
+    - key: "roof:shape"
+      name: "roof:shape"
+      type: string
+    - key: surface
+      name: surface
+      type: string
+    - key: "roof:orientation"
+      name: "roof:orientation"
+      type: string
+    - key: "roof:height"
+      name: "roof:height"
+      type: integer
+    - key: "roof:material"
+      name: "roof:material"
+      type: string
+    - key: "building:material"
+      name: "building:material"
+      type: string
     - name: type
       type: mapping_value
     - name: amenity
@@ -32,6 +68,24 @@ tables:
       - __any__
       landuse:
       - __any__
+    type: polygon
+  admin:
+    columns:
+      - name: osm_id
+        type: id
+      - name: geometry
+        type: geometry
+      - key: name
+        name: name
+        type: string
+      - name: type
+        type: mapping_value
+      - key: admin_level
+        name: admin_level
+        type: integer
+    mapping:
+      boundary:
+        - administrative
     type: polygon
   roads:
     columns:
