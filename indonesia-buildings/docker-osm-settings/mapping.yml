@@ -87,6 +87,38 @@ tables:
       boundary:
         - administrative
     type: polygon
+  waterways:
+    columns:
+      - name: osm_id
+        type: id
+      - name: geometry
+        type: geometry
+      - key: name
+        name: name
+        type: string
+      - key: boat
+        name: boat
+        type: bool
+      - key: intermittent
+        name: intermittent
+        type: bool
+      - key: name:af
+        name: name:af
+        type: string
+      - key: osm_type
+        name: osm_type
+        type: string
+      - name: waterway
+        type: mapping_value
+    mapping:
+      waterway:
+        - river
+        - stream
+        - riverbank
+        - canal
+        - drain
+        - ditch
+    type: linestring
   roads:
     columns:
       - name: osm_id
