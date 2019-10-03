@@ -41,6 +41,60 @@ select id,
            geometry
 FROM osm_buildings;
 
+-- Add a trigger function to notify QGIS of DB changes
+CREATE FUNCTION public.notify_qgis() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+        BEGIN NOTIFY qgis;
+        RETURN NULL;
+        END;
+    $$;
 
+-- Based on the tables defined in the mapping.yml create triggers
+
+CREATE TRIGGER notify_admin
+  AFTER INSERT OR UPDATE OR DELETE  ON public.osm_admin
+    FOR EACH STATEMENT EXECUTE PROCEDURE public.notify_qgis();
+
+    CREATE TRIGGER notify_buildings
+  AFTER INSERT OR UPDATE OR DELETE  ON public.osm_buildings
+    FOR EACH STATEMENT EXECUTE PROCEDURE public.notify_qgis();
+
+
+    CREATE TRIGGER notify_roads
+  AFTER INSERT OR UPDATE OR DELETE  ON public.osm_roads
+    FOR EACH STATEMENT EXECUTE PROCEDURE public.notify_qgis();
+
+    CREATE TRIGGER notify_waterways
+  AFTER INSERT OR UPDATE OR DELETE  ON public.osm_waterways
+    FOR EACH STATEMENT EXECUTE PROCEDURE public.notify_qgis();
+
+
+ALTER table osm_buildings add column building_type numeric;
+
+CREATE OR REPLACE FUNCTION building_type_mapper () RETURNS trigger LANGUAGE plpgsql
+AS $$
+BEGIN
+    update osm_buildings set build_type =
+
+    CASE
+        WHEN "building:use" = 'accomodation' THEN 0.5
+        WHEN "building:use" = 'commercial' THEN 0.5
+        WHEN "building:use" = 'education' THEN 1
+        WHEN "building:use" = 'government' THEN 0.5
+        WHEN "building:use" = 'multipurpose' THEN 0.3
+        WHEN "building:use" = 'place_of_worship' THEN 0.5
+        WHEN "building:use" = 'residential' THEN 1
+        WHEN "building:use" = 'ruko' THEN 1
+        WHEN "building:use" = 'shop' THEN 0.5
+        WHEN "building:use" = 'storage' THEN 0.5
+        ELSE 0.3
+        END
+    ;
+  RETURN NEW;
+  END
+  $$;
+
+CREATE TRIGGER type_mapper BEFORE INSERT OR UPDATE ON osm_buildings FOR EACH ROW EXECUTE PROCEDURE building_type_mapper();
 
 
