@@ -77,21 +77,23 @@ ALTER table osm_buildings add column building_type_recode numeric;
 CREATE OR REPLACE FUNCTION building_recode_mapper () RETURNS trigger LANGUAGE plpgsql
 AS $$
 BEGIN
-    new.building_type_recode =
+     SELECT
 
-    CASE
-        WHEN new.building_type = 'accomodation' THEN 0.5
-        WHEN new.building_type = 'Commercial' THEN 0.5
-        WHEN new.building_type = 'School' THEN 1
-        WHEN new.building_type = 'Government' THEN 0.5
-        WHEN new.building_type = 'multipurpose' THEN 0.3
-        WHEN new.building_type = 'Place of Worship' THEN 0.5
-        WHEN new.building_type = 'Residential' THEN 1
-        WHEN new.building_type = 'ruko' THEN 1
-        WHEN new.building_type = 'shop' THEN 0.5
-        WHEN new.building_type = 'storage' THEN 0.5
-        ELSE 0.3
+        CASE
+            WHEN new.building_type = 'accomodation' THEN 0.5
+            WHEN new.building_type = 'Commercial' THEN 0.5
+            WHEN new.building_type = 'School' THEN 1
+            WHEN new.building_type = 'Government' THEN 0.5
+            WHEN new.building_type = 'multipurpose' THEN 0.3
+            WHEN new.building_type = 'Place of Worship' THEN 0.5
+            WHEN new.building_type = 'Residential' THEN 1
+            WHEN new.building_type = 'ruko' THEN 1
+            WHEN new.building_type = 'shop' THEN 0.5
+            WHEN new.building_type = 'storage' THEN 0.5
+            ELSE 0.3
         END
+     INTO new.building_type_recode
+     FROM osm_buildings
     ;
   RETURN NEW;
   END
@@ -106,15 +108,16 @@ ALTER table osm_buildings add column area_recode numeric;
 CREATE OR REPLACE FUNCTION building_area_mapper () RETURNS trigger LANGUAGE plpgsql
 AS $$
 BEGIN
-    new.area_recode :=
-
-    CASE
-        WHEN ST_Area(st_transform(new.geometry,3857)) <= 100 THEN 1
-        WHEN ST_Area(st_transform(new.geometry,3857)) > 100 and ST_Area(st_transform(new.geometry,3857)) <= 300 THEN 0.7
-        WHEN ST_Area(st_transform(new.geometry,3857)) > 300 and ST_Area(st_transform(new.geometry,3857)) <= 500 THEN 0.5
-        WHEN ST_Area(st_transform(new.geometry,3857)) > 500 THEN 0.3
-        ELSE 0.3
+	SELECT
+        CASE
+            WHEN ST_Area(new.geometry::GEOGRAPHY) <= 100 THEN 1
+            WHEN ST_Area(new.geometry::GEOGRAPHY) > 100 and ST_Area(new.geometry::GEOGRAPHY) <= 300 THEN 0.7
+            WHEN ST_Area(new.geometry::GEOGRAPHY) > 300 and ST_Area(new.geometry::GEOGRAPHY) <= 500 THEN 0.5
+            WHEN ST_Area(new.geometry::GEOGRAPHY) > 500 THEN 0.3
+            ELSE 0.3
         END
+	INTO new.area_recode
+	FROM osm_buildings
     ;
   RETURN NEW;
   END
@@ -129,13 +132,15 @@ ALTER table osm_buildings add column walls_recode numeric;
 CREATE OR REPLACE FUNCTION building_walls_mapper () RETURNS trigger LANGUAGE plpgsql
 AS $$
 BEGIN
-    new.walls_recode =
+    SELECT
 
     CASE
         WHEN new."building:material" = 'brick' THEN 0.5
         WHEN new."building:material" = 'glass' THEN 0.3
         ELSE 0.3
         END
+    INTO walls_recode
+    FROM osm_buildings
     ;
   RETURN NEW;
   END
@@ -150,17 +155,15 @@ ALTER table osm_buildings add column river_distance numeric;
 CREATE OR REPLACE FUNCTION river_distance_mapper () RETURNS trigger LANGUAGE plpgsql
 AS $$
 BEGIN
-    new.river_distance := subquery.distance
+     SELECT ST_Distance(ST_Centroid(NEW.geometry)::GEOGRAPHY, rt.geometry::GEOGRAPHY)
+         INTO   NEW.river_distance
+         FROM   osm_waterways AS rt
+         ORDER BY
+                NEW.geometry <-> rt.geometry
+         LIMIT  1;
 
-                        FROM (with center as (
-                            select st_transform(st_centroid(geometry),3857) as geom, osm_id from
-                            osm_buildings )
-                            select st_distance(a.geom,st_transform(b.geometry,3857)) as distance
-                            from center as a, osm_waterways as b
-                                order by st_transform(b.geometry,3857) <-> a.geom
-                                limit 1) AS subquery ;
-  RETURN NEW;
-  END
+     RETURN NEW;
+   END
   $$;
 
 CREATE TRIGGER river_distance_mapper BEFORE INSERT OR UPDATE ON osm_buildings FOR EACH ROW EXECUTE PROCEDURE
@@ -172,14 +175,16 @@ ALTER table osm_buildings add column river_distance_recode numeric;
 CREATE OR REPLACE FUNCTION river_distance_recode_mapper () RETURNS trigger LANGUAGE plpgsql
 AS $$
 BEGIN
-    new.river_distance_recode :=
+    SELECT
         CASE
-        WHEN new.river_distance > 0 and <= 100 THEN 1.0
-        WHEN new.river_distance > 100 and <= 300  THEN 0.7
-        WHEN new.river_distance > 300 and <= 500  THEN 0.5
-        WHEN new.river_distance > 500 THEN 0.3
-        ELSE 0.3
+            WHEN new.river_distance > 0 and <= 100 THEN 1.0
+            WHEN new.river_distance > 100 and <= 300  THEN 0.7
+            WHEN new.river_distance > 300 and <= 500  THEN 0.5
+            WHEN new.river_distance > 500 THEN 0.3
+            ELSE 0.3
         END
+    INTO new.river_distance_recode
+    FROM osm_buildings
     ;
   RETURN NEW;
 
@@ -190,3 +195,13 @@ CREATE TRIGGER river_recode_mapper BEFORE INSERT OR UPDATE ON osm_buildings FOR 
     river_distance_recode_mapper ();
 
 
+-- count number or roads intersecting Surabaya
+SELECT type, COUNT(osm_id) FROM (
+    SELECT DISTINCT ON (a.osm_id) a.osm_id, a.type
+    FROM osm_roads as a
+    INNER JOIN osm_admin as b ON ST_Intersects(a.geometry, b.geometry) where b.name = 'Surabaya'
+) subquery
+GROUP BY type order by count;
+
+
+-- count number of rivers intersecting surabaya
