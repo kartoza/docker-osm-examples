@@ -273,8 +273,31 @@ BEGIN
 
   END
   $$;
+CREATE TRIGGER building_elevation_calc BEFORE INSERT OR UPDATE ON osm_buildings FOR EACH ROW EXECUTE PROCEDURE
+    building_elevation_mapper () ;
 
 -- create a function that recodes the values of the building elevation against the river elevation
+ALTER table osm_buildings add column low_lying_area_score numeric;
 
 
+CREATE OR REPLACE FUNCTION elevation_recode_mapper () RETURNS trigger LANGUAGE plpgsql
+AS $$
+BEGIN
+    SELECT
+        CASE
+            WHEN (new.building_elevation - new.river_elevation) <= 0  THEN 1.0
+            WHEN (new.building_elevation - new.river_elevation) > 0 and (new.building_elevation - new.river_elevation) <= 1   THEN 0.8
+            WHEN (new.building_elevation - new.river_elevation) > 1 and (new.building_elevation - new.river_elevation) <= 2  THEN 0.5
+            WHEN (new.building_elevation - new.river_elevation) > 2 THEN 0.1
+            ELSE 0.3
+        END
+    INTO new.low_lying_area_score
+    FROM osm_buildings
+    ;
+  RETURN NEW;
 
+  END
+  $$;
+
+CREATE TRIGGER st_elevation_recoder BEFORE INSERT OR UPDATE ON osm_buildings FOR EACH ROW EXECUTE PROCEDURE
+    elevation_recode_mapper () ;
