@@ -105,7 +105,7 @@ BEGIN
   END
   $$;
 
-CREATE TRIGGER building_type_recoder BEFORE INSERT OR UPDATE ON osm_buildings FOR EACH ROW EXECUTE PROCEDURE
+CREATE TRIGGER st_building_recoder BEFORE INSERT OR UPDATE ON osm_buildings FOR EACH ROW EXECUTE PROCEDURE
     building_recode_mapper();
 
 -- Create a column to hold the recoded calculated area in the table
@@ -197,7 +197,7 @@ BEGIN
   END
   $$;
 
-CREATE TRIGGER river_recode_mapper BEFORE INSERT OR UPDATE ON osm_buildings FOR EACH ROW EXECUTE PROCEDURE
+CREATE TRIGGER st_river_recode BEFORE INSERT OR UPDATE ON osm_buildings FOR EACH ROW EXECUTE PROCEDURE
     river_distance_recode_mapper ();
 
 
