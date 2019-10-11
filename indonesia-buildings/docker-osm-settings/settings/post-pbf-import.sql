@@ -218,7 +218,7 @@ SELECT waterway, COUNT(osm_id) FROM (
     FROM osm_waterways as a
     INNER JOIN osm_admin as b ON ST_Intersects(a.geometry, b.geometry) where b.name = 'Surabaya'
 ) subquery
-GROUP BY type order by count;
+GROUP BY waterway order by count;
 
 -- count number of buildings intersecting surabaya
 CREATE OR REPLACE VIEW osm_buildings_surabaya_stats as
@@ -227,7 +227,7 @@ SELECT building_type, COUNT(osm_id) FROM (
     FROM osm_buildings as a
     INNER JOIN osm_admin as b ON ST_Intersects(a.geometry, b.geometry) where b.name = 'Surabaya'
 ) subquery
-GROUP BY type order by count;
+GROUP BY building_type order by count;
 
 -- Create function to calculate the elevation of the nearest river in relation to  building centroid
 ALTER table osm_buildings add column river_elevation numeric;
