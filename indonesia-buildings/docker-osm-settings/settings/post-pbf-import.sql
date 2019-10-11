@@ -213,7 +213,7 @@ GROUP BY type order by count;
 
 -- count number of rivers intersecting surabaya
 CREATE OR REPLACE VIEW osm_rivers_surabaya_stats as
-SELECT type, COUNT(osm_id) FROM (
+SELECT waterway, COUNT(osm_id) FROM (
     SELECT DISTINCT ON (a.osm_id) a.osm_id, a.waterway
     FROM osm_waterways as a
     INNER JOIN osm_admin as b ON ST_Intersects(a.geometry, b.geometry) where b.name = 'Surabaya'
@@ -222,9 +222,59 @@ GROUP BY type order by count;
 
 -- count number of buildings intersecting surabaya
 CREATE OR REPLACE VIEW osm_buildings_surabaya_stats as
-SELECT type, COUNT(osm_id) FROM (
+SELECT building_type, COUNT(osm_id) FROM (
     SELECT DISTINCT ON (a.osm_id) a.osm_id, a.building_type
     FROM osm_buildings as a
     INNER JOIN osm_admin as b ON ST_Intersects(a.geometry, b.geometry) where b.name = 'Surabaya'
 ) subquery
 GROUP BY type order by count;
+
+-- Create function to calculate the elevation of the nearest river in relation to  building centroid
+ALTER table osm_buildings add column river_elevation numeric;
+
+CREATE OR REPLACE FUNCTION river_elevation_mapper () RETURNS trigger LANGUAGE plpgsql
+AS $$
+BEGIN
+    SELECT
+            ST_VALUE(rast, geom)
+    INTO new.river_elevation
+    FROM (WITH location as (
+        SELECT ST_X(st_centroid(new.geometry)) as latitude,ST_Y(st_centroid(new.geometry)) as longitude,
+        ST_SetSRID(St_MakePoint(ST_X(st_centroid(new.geometry)),ST_Y(st_centroid(new.geometry))),4326) as geom
+         FROM osm_buildings )
+        SELECT st_line_interpolate_point(b.geometry, 0.5) as geom, e.rast from location as a , osm_waterways as b, dem as e
+        WHERE ST_Intersects(e.rast, a.geom)
+        ORDER BY a.geom <-> b.geometry
+        LIMIT  1) foo;
+  RETURN NEW;
+
+  END
+  $$;
+
+CREATE TRIGGER river_elevation_calc BEFORE INSERT OR UPDATE ON osm_buildings FOR EACH ROW EXECUTE PROCEDURE
+    river_elevation_mapper () ;
+
+-- create a function to calculate the elevation of a building's centroid
+ALTER table osm_buildings add column building_elevation numeric;
+
+CREATE OR REPLACE FUNCTION building_elevation_mapper () RETURNS trigger LANGUAGE plpgsql
+AS $$
+BEGIN
+    SELECT
+            height
+    INTO new.building_elevation
+    FROM (WITH centroid as (
+ select ST_SetSRID(St_MakePoint(ST_X(st_centroid(new.geometry)),ST_Y(st_centroid(new.geometry))),4326) as geom FROM osm_buildings
+ )
+ SELECT ST_VALUE(e.rast, b.geom) as height
+  FROM dem e , centroid as b
+    WHERE ST_Intersects(e.rast, b.geom)) foo;
+  RETURN NEW;
+
+  END
+  $$;
+
+-- create a function that recodes the values of the building elevation against the river elevation
+
+
+
