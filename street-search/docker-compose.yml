@@ -5,7 +5,6 @@ volumes:
   import_done:
   import_queue:
   cache:
-  pgadmin_data:
 
 services:
   db:
@@ -29,11 +28,11 @@ services:
     image: kartoza/docker-osm:pbf-downloader
     volumes:
       # These are sharable to other containers
-      - ./settings:/home/settings
+      - ./docker-osm-settings:/home/settings
     environment:
       # Read the README in docker-osm-pbf
-      - CONTINENT=africa
-      - COUNTRY=south-africa
+      - CONTINENT=asia
+      - COUNTRY=jordan
       - BASE_URL=http://download.geofabrik.de
       - MAPPING_URL=''
       - GEOJSON_URL=''
@@ -42,7 +41,7 @@ services:
     image: kartoza/docker-osm:imposm-latest
     volumes:
       # These are sharable to other containers
-      - ./settings:/home/settings
+      - ./docker-osm-settings:/home/settings
       - import_done:/home/import_done
       - import_queue:/home/import_queue
       - cache:/home/cache
@@ -79,14 +78,14 @@ services:
       # Install some styles if you are using the default mapping. It can be 'yes' or 'no'
       - QGIS_STYLE=yes
       # Use clip in the database - To use this you should have run make import_clip to add your clip to the DB
-      - CLIP=no
+      - CLIP=yes
     command: bash -c "while [ ! -f /home/settings/country.pbf ] ; do sleep 1; done && python3 -u /home/importer.py"
 
   osmupdate:
     image: kartoza/docker-osm:osmupdate-latest
     volumes:
       # These are sharable to other containers
-      - ./settings:/home/settings
+      - ./docker-osm-settings:/home/settings
       - import_done:/home/import_done
       - import_queue:/home/import_queue
       - cache:/home/cache
@@ -119,7 +118,7 @@ services:
     image: kartoza/docker-osm:osmenrich-latest
     volumes:
       # These are sharable to other containers
-      - ./settings:/home/settings
+      - ./docker-osm-settings:/home/settings
       - import_done:/home/import_done
       - import_queue:/home/import_queue
       - cache:/home/cache

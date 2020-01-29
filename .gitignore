@@ -1,3 +1,8 @@
 timestamp.txt
 settings
 .DS_Store
+.idea
+*last.state.txt
+*timestamp.txt
+*country.pbf
+*_lock
