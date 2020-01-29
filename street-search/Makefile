@@ -32,11 +32,11 @@ rm-volumes:
 	@echo "------------------------------------------------------------------"
 	@echo "Removing all volumes!!!! "
 	@echo "------------------------------------------------------------------"
-	@docker volume rm $(PROJECT_ID)_osm-postgis-data $(PROJECT_ID)_import_queue $(PROJECT_ID)_import_done $(PROJECT_ID)_cache $(PROJECT_ID)_osm_settings $(PROJECT_ID)_pgadmin_data
+	@docker volume rm $(PROJECT_ID)_osm-postgis-data $(PROJECT_ID)_import_queue $(PROJECT_ID)_import_done $(PROJECT_ID)_cache
 
 dbshell:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Shelling in in production database"
 	@echo "------------------------------------------------------------------"
-	@docker exec -t -i dockerosmdemo_db_1 psql -U docker -h localhost gis
+	@docker exec -t -i $(PROJECT_ID)_db_1 psql -U docker -h localhost gis

@@ -5,7 +5,7 @@ define([
     'js/view/controls/identify.js',
 ], function (Backbone, $, Basemap, Identify) {
     return Backbone.View.extend({
-        initBounds: [[-37.335224359306395, 3.6474609375000004], [-19.082884369340157, 44.36279296875]],
+        initBounds: [[28.9600886880068, 32.10205078125001], [33.417687357334934, 42.28088378906251]],
         initialize: function () {
             this.map = L.map('map').setView([51.505, -0.09], 13).fitBounds(this.initBounds);
             this.addBasemap();

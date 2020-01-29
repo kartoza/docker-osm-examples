@@ -4,6 +4,12 @@ define([], function () {
             2: 'Country',
             4: 'Region',
             6: 'Settlement',
+        },
+        'الأردن': {
+            2: 'Country',
+            4: 'Governorate',
+            6: 'District',
+            7: 'Subdistrict',
         }
     }
     return {
@@ -12,7 +18,9 @@ define([], function () {
                 let country = data[data.length - 1].name;
                 const adm = mapping[country];
                 $.each(data, function (key, value) {
-                    value.level = adm[value.level];
+                    if (adm[value.level]) {
+                        value.level = adm[value.level];
+                    }
                 });
             } catch (e) {
 
