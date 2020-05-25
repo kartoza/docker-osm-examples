@@ -5,11 +5,12 @@ volumes:
   import_done:
   import_queue:
   cache:
+  osm-geoserver-data:
 
 services:
   db:
     # About the postgresql version, it should match in the dockerfile of docker-imposm3
-    image: kartoza/postgis:9.6-2.4
+    image: kartoza/postgis:12.0
     hostname: db
     environment:
       - POSTGRES_USER=docker
@@ -67,6 +68,7 @@ services:
       - QGIS_STYLE=yes
       # Use clip in the database
       - CLIP=no
+    command: bash -c "while [ ! -f /home/settings/country.pbf ] ; do sleep 1; done && python3 -u /home/importer.py"
 
   osmupdate:
     image: kartoza/docker-osm:osmupdate-latest
@@ -99,6 +101,7 @@ services:
       # seconds between 2 executions of the script
       # if 0, then no update will be done, only the first initial import from the PBF
       - TIME=120
+    command: bash -c "while [ ! -f /home/settings/country.pbf ] ; do sleep 1; done && python3 -u /home/download.py"
 
   osmenrich:
     image: kartoza/docker-osm:osmenrich-latest
@@ -126,3 +129,25 @@ services:
       # seconds between 2 executions of the script
       # if 0, then no update will be done, only the first initial import from the PBF
       - TIME=120
+    command: bash -c "while [ ! -f /home/settings/importer.lock ] ; do sleep 1; done && python3 -u /home/enrich.py"
+
+  geoserver:
+    image: kartoza/geoserver:2.17.0
+    volumes:
+      - osm-geoserver-data:/opt/geoserver/data_dir
+    ports:
+      - "8600:8080"
+    restart: on-failure
+    environment:
+      - GEOSERVER_ADMIN_PASSWORD=myawesomegeoserver
+      - GEOSERVER_ADMIN_USER=admin
+      - INITIAL_MEMORY=2G
+      - MAXIMUM_MEMORY=4G
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: curl --fail -s http://localhost:8080/ || exit 1
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
