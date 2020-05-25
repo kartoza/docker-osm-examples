@@ -1,0 +1,98 @@
+version: '2'
+volumes:
+  import_done: {}
+  cache: {}
+  import_queue: {}
+  osm-postgis: {}
+  data: {}
+  storage: {}
+services:
+  osm-storage:
+    image: mazano/trieste-power-osm-mirror
+    stdin_open: true
+    volumes:
+    - storage:/settings
+    tty: true
+    command:
+    - /bin/true
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.container.start_once: 'true'
+  osmupdate:
+    image: kartoza/docker-osm:osmupdate-latest
+    environment:
+      BASE_URL: http://planet.openstreetmap.org/replication/
+      COMPRESSION_LEVEL: '1'
+      DIFF: sporadic
+      IMPORT_DONE: import_done
+      IMPORT_QUEUE: import_queue
+      MAX_DAYS: '100'
+      MAX_MERGE: '7'
+      TIME: '120'
+    volumes:
+    - storage:/home/settings
+    - import_done:/home/import_done
+    - import_queue:/home/import_queue
+    - cache:/home/cache
+    links:
+    - db:db
+  osmenrich:
+    image: kartoza/docker-osm:osmenrich-latest
+    environment:
+      IMPORT_DONE: import_done
+      IMPORT_QUEUE: import_queue
+      POSTGRES_DBNAME: gis
+      POSTGRES_HOST: db
+      POSTGRES_PASS: docker
+      POSTGRES_PORT: '5432'
+      POSTGRES_USER: docker
+      TIME: '120'
+    volumes:
+    - storage:/home/settings
+    - import_done:/home/import_done
+    - import_queue:/home/import_queue
+    - cache:/home/cache
+    links:
+    - db:db
+  imposm:
+    image: kartoza/docker-osm:imposm-latest
+    environment:
+      CACHE: cache
+      CLIP: 'no'
+      DBSCHEMA_BACKUP: backup
+      DBSCHEMA_IMPORT: import
+      DBSCHEMA_PRODUCTION: public
+      IMPORT_DONE: import_done
+      IMPORT_QUEUE: import_queue
+      OPTIMIZE: 'false'
+      POSTGRES_DBNAME: gis
+      POSTGRES_HOST: db
+      POSTGRES_PASS: docker
+      POSTGRES_PORT: '5432'
+      POSTGRES_USER: docker
+      QGIS_STYLE: 'yes'
+      SETTINGS: settings
+      SRID: '4326'
+      TIME: '120'
+    volumes:
+    - storage:/home/settings
+    - import_done:/home/import_done
+    - import_queue:/home/import_queue
+    - cache:/home/cache
+    links:
+    - db:db
+  db:
+    image: kartoza/postgis:11.0-2.5
+    hostname: db
+    environment:
+      ALLOW_IP_RANGE: 0.0.0.0/0
+      PG_MAX_WAL_SENDERS: '20'
+      PG_WAL_KEEP_SEGMENTS: '350'
+      POSTGRES_DBNAME: gis
+      POSTGRES_PASS: docker
+      POSTGRES_USER: docker
+    volumes:
+    - osm-postgis:/var/lib/postgresql
+    - storage:/home/settings
+    ports:
+    - 5433:5432/tcp

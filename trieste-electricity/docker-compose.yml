@@ -9,7 +9,7 @@ volumes:
 services:
   db:
     # About the postgresql version, it should match in the dockerfile of docker-imposm3
-    image: kartoza/postgis:9.6-2.4
+    image: kartoza/postgis:11.0-2.5
     restart: always
     hostname: db
     environment:
@@ -18,8 +18,8 @@ services:
       - POSTGRES_DBNAME=gis
       # Uncomment to expose the postgis database on the network
       - ALLOW_IP_RANGE= 0.0.0.0/0
-#    volumes:
-#      - 'osm-postgis-data:/var/lib/postgresql'
+    volumes:
+      - osm-postgis-data:/var/lib/postgresql
     # Uncomment to use the postgis database from outside the docker network
     ports:
       - "35432:5432"
