@@ -36,3 +36,19 @@ BEGIN
 END
 $func$ LANGUAGE plpgsql;
 
+-- FUNCTION FOR IDENTIFY NEAREST STREET --
+-- WITH JUST lat, lng RETURN LIST OF NEAREST STREET --
+CREATE OR REPLACE FUNCTION identify_nearest_street(lat text, lng text)
+  RETURNS TABLE (
+    id integer,
+    name VARCHAR
+  ) AS
+$func$
+BEGIN
+  RETURN QUERY
+  SELECT osm.id as id, osm.name as name
+      FROM osm_roads as osm
+      WHERE ST_DWithin(geometry, ST_MakePoint(CAST (lng AS float ),CAST (lat AS float ))::geography, 100)
+      ORDER BY ST_Distance(geometry, ST_MakePoint(CAST (lng AS float ),CAST (lat AS float ))::geography);
+END
+$func$ LANGUAGE plpgsql;
