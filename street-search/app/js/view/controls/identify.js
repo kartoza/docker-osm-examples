@@ -98,16 +98,16 @@ define([
                     {lat: latLng.lat, lng: latLng.lng},
                     'application/json'
                 ).done(function (data) {
+                    let html = ''
                     if (data) {
-                        let html = ''
                         data = that.administrativeMap.map(data)
                         data.forEach(x => {
                             if (x.level) {
                                 html += `<div><b>${x.level}</b> : ${x.name}</div>`;
                             }
-                            $('#administration-data').html(html)
                         })
                     }
+                    $('#administration-data').html(html)
                 }).fail(function () {
                     console.log("error");
                 });
@@ -130,14 +130,16 @@ define([
                     'application/json'
                 ).done(function (data) {
                     let html = ''
-                    data.forEach(x => {
-                        if (x.name) {
-                            html += `
+                    if (data) {
+                        data.forEach(x => {
+                            if (x.name) {
+                                html += `
                                 <div class="street-list" onclick="dispatcher.trigger('street:detail', ${x.id}, '${x.name}', null)">
                                 <i class="fa fa-location-arrow" aria-hidden="true"></i> ${x.name}</div>`;
-                            $('#nearest-street-data').html(html)
-                        }
-                    })
+                            }
+                        })
+                    }
+                    $('#nearest-street-data').html(html)
 
                 }).fail(function () {
                     console.log("error");
