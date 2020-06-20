@@ -48,9 +48,9 @@ CREATE OR REPLACE FUNCTION identify_nearest_street(lat text, lng text)
 $func$
 BEGIN
   RETURN QUERY
-  with pnts as ( select ST_SetSRID(ST_MakePoint(CAST (lng AS float ),CAST (lat AS float )),4326) AS ref_geom)
+
   SELECT osm.id as id, osm.name as name
-      FROM osm_roads as osm, pnts
-      ORDER BY geometry <-> pnts.ref_geom limit 10;
+      FROM osm_roads as osm
+      ORDER BY geometry <-> ( select ST_SetSRID(ST_MakePoint(CAST (lng AS float ),CAST (lat AS float )),4326)) limit 10;
 END
 $func$ LANGUAGE plpgsql;
