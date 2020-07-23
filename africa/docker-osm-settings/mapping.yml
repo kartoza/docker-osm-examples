@@ -1,0 +1,286 @@
+areas:
+  area_tags: [buildings]
+tables:
+  buildings:
+    columns:
+    - name: osm_id
+      type: id
+    - name: geometry
+      type: geometry
+    - key: name
+      name: name
+      type: string
+    - key: leisure
+      name: leisure
+      type: string
+    - key: use
+      name: use
+      type: string
+    - key: religion
+      name: religion
+      type: string
+    - name: type
+      type: mapping_value
+    - name: amenity
+      type: mapping_value
+    - name: landuse
+      type: mapping_value
+    mapping:
+      building:
+      - __any__
+      amenity:
+        - school
+        - university
+        - government
+        - clinic
+        - hospital
+        - fire
+        - police
+        - public building
+        - worship
+        - mall
+        - doctor
+        - kindergarten
+        - college
+        - market
+      landuse:
+        - residential
+        - recreation_ground
+      religion:
+        - islam
+        - muslim
+        - budd
+        - unitarian
+      use:
+        - government
+        - residential
+        - education
+        - medical
+        - place_of_worship
+        - school
+        - hospital
+        - commercial
+        - industrial
+        - utility
+    type: polygon
+  admin:
+    columns:
+      - name: osm_id
+        type: id
+      - name: geometry
+        type: geometry
+      - key: name
+        name: name
+        type: string
+      - name: type
+        type: mapping_value
+      - key: admin_level
+        name: admin_level
+        type: integer
+    mapping:
+      boundary:
+        - administrative
+    type: polygon
+  landuse:
+    columns:
+      - name: osm_id
+        type: id
+      - name: geometry
+        type: geometry
+      - key: name
+        name: name
+        type: string
+      - key: landuse
+        name: landuse
+        type: string
+      - key: barrier
+        name: barrier
+        type: string
+      - key: landcover
+        name: landcover
+        type: string
+      - name: type
+        type: mapping_value
+    mapping:
+      landuse:
+        - __any__
+    type: polygon
+  roads:
+    columns:
+      - name: osm_id
+        type: id
+      - name: geometry
+        type: geometry
+      - name: type
+        type: mapping_value
+      - key: name
+        name: name
+        type: string
+      - key: oneway
+        name: oneway
+        type: direction
+      - key: layer
+        name: z_order
+        type: wayzorder
+      - key: service
+        name: service
+        type: string
+      - key: ref
+        name: ref
+        type: string
+      - key: tunnel
+        name: tunnel
+        type: string
+      - name: class
+        type: mapping_key
+    filters:
+      reject:
+        area: ["yes"]
+    mappings:
+
+      roads:
+        mapping:
+          highway:
+            - motorway
+            - motorway_link
+            - trunk
+            - trunk_link
+            - primary
+            - primary_link
+            - secondary
+            - secondary_link
+            - tertiary
+            - tertiary_link
+            - road
+            - path
+            - track
+            - service
+            - footway
+            - bridleway
+            - cycleway
+            - steps
+            - pedestrian
+            - living_street
+            - unclassified
+            - residential
+            - raceway
+          man_made:
+            - pier
+            - groyne
+    type: linestring
+
+  places:
+    columns:
+      - name: osm_id
+        type: id
+      - name: geometry
+        type: geometry
+      - key: name
+        name: name
+        type: string
+      - key: landuse
+        name: landuse
+        type: string
+      - key: population
+        name: population
+        type: integer
+      - name: place
+        type: mapping_value
+    mapping:
+      place:
+        - sea
+        - ocean
+        - island
+        - archipelago
+        - village
+        - town
+        - hamlet
+        - neighbourhood
+        - quarter
+        - suburb
+        - borough
+        - city
+        - municpality
+        - district
+        - province
+        - region
+        - state
+        - country
+    type: point
+  waterways:
+    columns:
+      - name: osm_id
+        type: id
+      - name: geometry
+        type: geometry
+      - key: name
+        name: name
+        type: string
+      - name: waterway
+        type: mapping_value
+    mapping:
+      waterway:
+        - river
+        - stream
+        - riverbank
+        - canal
+        - drain
+        - ditch
+    type: linestring
+  national_parks:
+    columns:
+      - name: osm_id
+        type: id
+      - name: geometry
+        type: geometry
+      - key: name
+        name: name
+        type: string
+      - key: leisure
+        name: leisure
+        type: string
+      - key: landuse
+        name: landuse
+        type: string
+      - name: boundary
+        type: mapping_value
+    mapping:
+      boundary:
+        - national_park
+    type: polygon
+
+  parks:
+    columns:
+      - name: osm_id
+        type: id
+      - name: geometry
+        type: geometry
+      - key: name
+        name: name
+        type: string
+      - name: leisure
+        type: mapping_value
+    mapping:
+      leisure:
+        - park
+    type: polygon
+
+  lakes:
+    columns:
+      - name: osm_id
+        type: id
+      - name: geometry
+        type: geometry
+      - key: name
+        name: name
+        type: string
+      - name: water
+        type: mapping_value
+      - name: natural
+        type: mapping_value
+    mapping:
+      natural:
+        - water
+      water:
+        - lake
+    type: polygon
