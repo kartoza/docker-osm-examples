@@ -1,4 +1,4 @@
-PROJECT_ID := lisbon-osm-mirror
+PROJECT_ID := saintlucia-osm-mirror
 COMPOSE := -f docker-compose.yml
 
 SHELL := /bin/bash
