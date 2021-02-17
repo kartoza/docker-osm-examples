@@ -6,34 +6,24 @@ SHELL := /bin/bash
 # ----------------------------------------------------------------------------
 #    P R O D U C T I O N     C O M M A N D S
 # ----------------------------------------------------------------------------
-deploy: run-docker-osm-setting run import-clip
+deploy: run-docker-pbf-fetcher run
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Bringing up docker osm instance and loading clip region"
 	@echo "------------------------------------------------------------------"
 
-run: run-docker-osm-setting 
+run: run-docker-pbf-fetcher 
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Bringing up docker osm instance "
 	@echo "------------------------------------------------------------------"
-	@docker-compose -f docker-compose.yml -p $(PROJECT_ID) up -d --no-recreate
+	@docker-compose -f docker-compose.yml -p $(PROJECT_ID) up -d --no-recreate 
 
-run-docker-osm-setting:
+run-docker-pbf-fetcher:
 	@echo "------------------------------------------------------------------"
-	@echo "Get setting of "
+	@echo "Get country pbf and copying to settings folder"
 	@echo "------------------------------------------------------------------"
-	$(MAKE) -C docker-osm-settings osm-settings
-
-import-clip:
-	@echo
-	@echo "------------------------------------------------------------------"
-	@echo "Importing clip shapefile into the database"
-	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID) exec imposm apt update
-	@docker-compose -p $(PROJECT_ID) exec imposm apt install -y gdal-bin
-	@docker-compose -p $(PROJECT_ID) exec imposm /usr/bin/ogr2ogr -progress -skipfailures -lco GEOMETRY_NAME=geom -nlt PROMOTE_TO_MULTI -f PostgreSQL PG:"host=db user=docker password=docker dbname=gis" /home/settings/clip/clip.shp
-
+	$(MAKE) -C docker-pbf-fetcher get-pbf
 
 kill:
 	@echo

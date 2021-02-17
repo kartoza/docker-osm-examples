@@ -30,7 +30,7 @@ services:
     image: kartoza/docker-osm:imposm-latest
     volumes:
       # These are sharable to other containers
-      - ./docker-osm-settings/settings:/home/settings
+      - ./settings:/home/settings
       - import_done:/home/import_done
       - import_queue:/home/import_queue
       - cache:/home/cache
@@ -67,13 +67,13 @@ services:
       # Install some styles if you are using the default mapping. It can be 'yes' or 'no'
       - QGIS_STYLE=yes
       # Use clip in the database
-      - CLIP=no
+      - CLIP=yes
 
   osmupdate:
     image: kartoza/docker-osm:osmupdate-latest
     volumes:
       # These are sharable to other containers
-      - ./docker-osm-settings/settings:/home/settings
+      - ./settings:/home/settings
       - import_done:/home/import_done
       - import_queue:/home/import_queue
       - cache:/home/cache
@@ -105,7 +105,7 @@ services:
     image: kartoza/docker-osm:osmenrich-latest
     volumes:
       # These are sharable to other containers
-      - ./docker-osm-settings/settings:/home/settings
+      - ./settings:/home/settings
       - import_done:/home/import_done
       - import_queue:/home/import_queue
       - cache:/home/cache
@@ -119,15 +119,15 @@ services:
       - POSTGRES_PORT=5432
       - POSTGRES_HOST=db
       # These are all currently the defaults but listed here for your
-      # convenience if you want to change them
-      # folder for diff which hasn't been imported yet
-      - IMPORT_QUEUE=import_queue
-      # folder for diff which has been imported
-      - IMPORT_DONE=import_done
-      # seconds between 2 executions of the script
-      # if 0, then no update will be done, only the first initial import from the PBF
-    command: bash -c "while [ ! -f /home/settings/importer.lock ] ; do sleep 1; done && python3 -u /home/enrich.py"
-      - TIME=120
+      #      # convenience if you want to change them
+      #      # folder for diff which hasn't been imported yet
+      #      - IMPORT_QUEUE=import_queue
+      #      # folder for diff which has been imported
+      #      - IMPORT_DONE=import_done
+      #      # seconds between 2 executions of the script
+      #      # if 0, then no update will be done, only the first initial import from the PBF
+      #    command: bash -c "while [ ! -f /home/settings/importer.lock ] ; do sleep 1; done && python3 -u /home/enrich.py"
+      #      - TIME=120
 
   geoserver:
     image: kartoza/geoserver:2.18.0

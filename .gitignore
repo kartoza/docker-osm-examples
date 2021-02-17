@@ -1,5 +1,5 @@
 timestamp.txt
-settings
+archive/*settings
 .DS_Store
 .idea
 *last.state.txt
