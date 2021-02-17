@@ -1,8 +1,11 @@
 timestamp.txt
-archive/*settings
 .DS_Store
 .idea
 *last.state.txt
 *timestamp.txt
 *country.pbf
 *_lock
+archive/angola-buildings/docker-osm-settings/settings
+archive/indonesia-buildings/docker-osm-settings/settings
+archive/lisbon/docker-osm-settings/settings
+archive/trieste-electricity/docker-osm-settings/settings
