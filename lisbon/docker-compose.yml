@@ -10,7 +10,7 @@ volumes:
 services:
   db:
     # About the postgresql version, it should match in the dockerfile of docker-imposm3
-    image: kartoza/postgis:9.6-2.4
+    image: kartoza/postgis:12.0
     hostname: db
     environment:
       - POSTGRES_USER=docker
@@ -18,8 +18,8 @@ services:
       - POSTGRES_DBNAME=gis
       # Uncomment to expose the postgis database on the network
       - ALLOW_IP_RANGE= 0.0.0.0/0
-#    volumes:
-#      - 'osm-postgis-data:/var/lib/postgresql'
+    volumes:
+      - osm-postgis-data:/var/lib/postgresql
     # Uncomment to use the postgis database from outside the docker network
     ports:
       - "35432:5432"
@@ -67,7 +67,8 @@ services:
       # Install some styles if you are using the default mapping. It can be 'yes' or 'no'
       - QGIS_STYLE=yes
       # Use clip in the database
-      - CLIP=no
+      - CLIP=yes
+    command: bash -c "while [ ! -f /home/settings/country.pbf ] ; do sleep 1; done && python3 -u /home/importer.py"
 
   osmupdate:
     image: kartoza/docker-osm:osmupdate-latest
@@ -100,6 +101,7 @@ services:
       # seconds between 2 executions of the script
       # if 0, then no update will be done, only the first initial import from the PBF
       - TIME=120
+    command: bash -c "while [ ! -f /home/settings/country.pbf ] ; do sleep 1; done && python3 -u /home/download.py"
 
   osmenrich:
     image: kartoza/docker-osm:osmenrich-latest
@@ -127,6 +129,7 @@ services:
       # seconds between 2 executions of the script
       # if 0, then no update will be done, only the first initial import from the PBF
       - TIME=120
+    command: bash -c "while [ ! -f /home/settings/importer.lock ] ; do sleep 1; done && python3 -u /home/enrich.py"
 
   geoserver:
     image: kartoza/geoserver:2.17.0

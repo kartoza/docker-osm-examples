@@ -96,3 +96,13 @@ body {
     border: 1px solid orange;
     background: orange;
 }
+
+.leaflet-popup-content-wrapper hr {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.leaflet-popup-content-wrapper .street-list:hover {
+    cursor: pointer;
+    opacity: 0.5;
+}

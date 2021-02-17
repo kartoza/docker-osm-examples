@@ -9,10 +9,12 @@ CREATE OR REPLACE FUNCTION identify_administrative(lat text, lng text)
 $func$
 BEGIN
   RETURN QUERY
-  SELECT osm.osm_id as osm_id, osm.name as name, osm.admin_level as level
-      FROM osm_admin as osm
-      CROSS JOIN (SELECT ST_MakePoint(CAST (lng AS float ),CAST (lat AS float ))::geography AS ref_geom) AS r
-      WHERE ST_INTERSECTS(geometry, ref_geom) ORDER BY osm.admin_level DESC;
+  with pnts as ( select ST_SetSRID(ST_MakePoint(CAST (lng AS float ),CAST (lat AS float )),4326) AS ref_geom)
+    SELECT osm.osm_id as osm_id, osm.name as name, osm.admin_level as level
+    FROM osm_admin as osm
+    CROSS JOIN pnts
+    where ST_Intersects(geometry ,pnts.ref_geom)
+     ORDER BY osm.admin_level DESC;
 END
 $func$ LANGUAGE plpgsql;
 
@@ -36,3 +38,19 @@ BEGIN
 END
 $func$ LANGUAGE plpgsql;
 
+-- FUNCTION FOR IDENTIFY NEAREST STREET --
+-- WITH JUST lat, lng RETURN LIST OF NEAREST STREET --
+CREATE OR REPLACE FUNCTION identify_nearest_street(lat text, lng text)
+  RETURNS TABLE (
+    id integer,
+    name VARCHAR
+  ) AS
+$func$
+BEGIN
+  RETURN QUERY
+
+  SELECT osm.id as id, osm.name as name
+      FROM osm_roads as osm
+      ORDER BY geometry <-> ( select ST_SetSRID(ST_MakePoint(CAST (lng AS float ),CAST (lat AS float )),4326)) limit 10;
+END
+$func$ LANGUAGE plpgsql;

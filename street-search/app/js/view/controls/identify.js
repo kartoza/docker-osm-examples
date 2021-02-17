@@ -46,7 +46,8 @@ define([
                     that.layer = event.layer;
                     that.layerGroup.addLayer(that.layer);
                     that.showPopup();
-                    that.fetchData()
+                    that.fetchAdministrativeData();
+                    that.fetchNearestStreetData();
                 }
             });
             return wrapper;
@@ -56,17 +57,16 @@ define([
          * @param data : Array
          */
         showPopup: function (data) {
-            let html = '<i class="fa fa-spinner fa-pulse"></i> Loading';
-            if (data) {
-                html = ''
-                data.forEach(x => {
-                    if (x.level) {
-                        html += `<div><b>${x.level}</b> : ${x.name}</div>`;
-                    }
-                })
-            }
+            let html = '' +
+                '<div id="administration-data"><i class="fa fa-spinner fa-pulse"></i> identify administration</div>' +
+                '<hr>' +
+                '<div id="nearest-street-data"><i class="fa fa-spinner fa-pulse"></i> identify nearest streets</div>' +
+                '';
             this.layer.closePopup();
-            this.layer.bindPopup(html);
+            this.layer.bindPopup(
+                html,
+                {closeButton: false, closeOnClick: false}
+            );
             this.layer.openPopup();
         },
         /**
@@ -88,7 +88,7 @@ define([
         /**
          * Fetch data based on location of layer
          */
-        fetchData: function () {
+        fetchAdministrativeData: function () {
             // call filters from api
             let latLng = this.layerGroup.getLayers()[0].getLatLng();
             const that = this;
@@ -98,7 +98,49 @@ define([
                     {lat: latLng.lat, lng: latLng.lng},
                     'application/json'
                 ).done(function (data) {
-                    that.showPopup(that.administrativeMap.map(data));
+                    let html = ''
+                    if (data) {
+                        data = that.administrativeMap.map(data)
+                        data.forEach(x => {
+                            if (x.level) {
+                                html += `<div><b>${x.level}</b> : ${x.name}</div>`;
+                            }
+                        })
+                    }
+                    $('#administration-data').html(html)
+                }).fail(function () {
+                    console.log("error");
+                });
+            }
+        },
+        /**
+         * Fetch data based on location of layer
+         */
+        fetchNearestStreetData: function () {
+            // call filters from api
+            let data = [{"osm_id": 9657643, "name": "Moody Crescent"},
+                {"osm_id": 9657644, "name": "Moody Crescent"}]
+
+            let latLng = this.layerGroup.getLayers()[0].getLatLng();
+            const that = this;
+            if (latLng) {
+                Request.post(
+                    postgresUrl + 'rpc/identify_nearest_street',
+                    {lat: latLng.lat, lng: latLng.lng},
+                    'application/json'
+                ).done(function (data) {
+                    let html = ''
+                    if (data) {
+                        data.forEach(x => {
+                            if (x.name) {
+                                html += `
+                                <div class="street-list" onclick="dispatcher.trigger('street:detail', ${x.id}, '${x.name}', null)">
+                                <i class="fa fa-location-arrow" aria-hidden="true"></i> ${x.name}</div>`;
+                            }
+                        })
+                    }
+                    $('#nearest-street-data').html(html)
+
                 }).fail(function () {
                     console.log("error");
                 });
