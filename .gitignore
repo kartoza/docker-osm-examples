@@ -5,7 +5,11 @@ timestamp.txt
 *timestamp.txt
 *country.pbf
 *_lock
+*.lock
 archive/angola-buildings/docker-osm-settings/settings
 archive/indonesia-buildings/docker-osm-settings/settings
 archive/lisbon/docker-osm-settings/settings
 archive/trieste-electricity/docker-osm-settings/settings
+*.hgt
+saintlucia/protected-areas/
+saintlucia/saint_lucia_dem.tif
